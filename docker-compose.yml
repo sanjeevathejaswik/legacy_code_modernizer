@@ -1,0 +1,54 @@
+version: "3.9"
+
+# Shared volume so the dashboard reads artefacts produced by the API
+volumes:
+  pipeline_output:
+    driver: local
+
+services:
+
+  # ── Conversion API ──────────────────────────────────────────────────────────
+  api:
+    build: .
+    container_name: legacy-converter-api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - pipeline_output:/app/output
+    environment:
+      OUTPUT_DIR:            /app/output
+      PIPELINE_OUTPUT_BASE:  /app/output
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout:  10s
+      retries:  3
+
+  # ── Streamlit Dashboard ─────────────────────────────────────────────────────
+  dashboard:
+    build: .
+    container_name: legacy-converter-dashboard
+    ports:
+      - "8501:8501"
+    env_file: .env
+    volumes:
+      - pipeline_output:/app/output
+    environment:
+      OUTPUT_DIR:            /app/output
+      PIPELINE_OUTPUT_BASE:  /app/output
+    command: >
+      streamlit run dashboard/app.py
+      --server.address 0.0.0.0
+      --server.port 8501
+      --server.headless true
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy

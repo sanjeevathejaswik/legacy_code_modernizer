@@ -1,0 +1,27 @@
+# Evaluation framework
+deepeval>=0.21.0
+
+# Pipeline core
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-openai>=0.2.0
+langchain-core>=0.3.0
+openai>=1.50.0
+streamlit>=1.39.0
+python-dotenv>=1.0.0
+pydantic>=2.9.0
+typing-extensions>=4.12.0
+rich>=13.8.0
+tiktoken>=0.8.0
+plotly>=5.24.0
+pandas>=2.2.0
+
+# AST parsing (stub recovery in code_splitter)
+tree-sitter>=0.23.0
+tree-sitter-java>=0.23.0
+
+# FastAPI layer
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-multipart>=0.0.12
+aiofiles>=24.1.0
